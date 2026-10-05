@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -175,7 +176,7 @@ public class BBDD {
     private void escribir() throws BBDDException {
         for (byte[] r : contenidoFichero) {
             try {
-                Files.write(ruta, r);
+                Files.write(ruta, r, StandardOpenOption.APPEND);
             } catch (IOException e) {
                 throw new BBDDException("Looool");
             }
