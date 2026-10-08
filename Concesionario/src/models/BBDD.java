@@ -2,10 +2,10 @@ package models;
 
 import exception.AppException;
 import exception.BBDDException;
-import io.MiEntradaSalida;
-import io.PropertiesReader;
+
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class BBDD {
     private static final byte BYTE_ESPACIO = (byte) ' ';
@@ -24,9 +23,11 @@ public class BBDD {
     private static final String MARCA = "Marca";
     private static final int CANT_BYTES_MOD = 32;
     private static final String MODELO = "Modelo";
-    private static final int CANT_TOT_BYTES = 51;
+    private static final int CANT_TOT_BYTES = 71;
 
     private List<byte[]> contenidoFichero;
+
+
 
 
     private final Path ruta;
@@ -39,7 +40,7 @@ public class BBDD {
     /*
     Constructor
      */
-    public BBDD(String ruta, Map<String, Integer> esquemaCampos, String campoClave) throws AppException, IOException {
+    public BBDD(String ruta, Map<String, Integer> esquemaCampos, String campoClave) throws AppException, IOException, BBDDException {
         contenidoFichero = new LinkedList<>();
         this.ruta = Path.of(ruta);
         this.esquemaCampos = esquemaCampos;
@@ -68,27 +69,20 @@ public class BBDD {
      * @param pos posición en la que insertar el registro (-1 si es en la última posición)
      * @throws BBDDException
      */
-    public void insertar(int pos) throws BBDDException {
-        //Pedimos los datos del registro
-
-        String matricula = MiEntradaSalida.leerLinea("Introduce la matrícula: \n");
-        String marca = MiEntradaSalida.leerLinea("Introduce la marca: \n");
-        String modelo = MiEntradaSalida.leerLinea("Introduce la modelo: \n");
-
-
+    public void insertar(int pos, String matricula, String marca, String modelo) throws BBDDException {
+        int posicionReal = pos -1;
         // Si ya existe esa matricula lanzamos una excepción
-        if (buscar(matricula) == -1) {
+        if (buscar(matricula) != -1) {
             throw new BBDDException("La Primary key (matrícula) esta repetida");
         }
-
 
         //Llama al metodo para crear el array de bytes del registro
         byte[] registroRes = crearArrayDeBytesDeRegistro(matricula, modelo, marca);
 
-        if (pos == -1 || pos > this.numeroRegistros) {
+        if (pos == -1 || posicionReal > this.numeroRegistros) {
             contenidoFichero.add(registroRes);
         } else {
-            contenidoFichero.add(pos, registroRes);
+            contenidoFichero.add(posicionReal, registroRes);
         }
 
         escribir();
@@ -134,7 +128,7 @@ public class BBDD {
         byte[] arrayMar = rellenarConBytes(MARCA, mar, CANT_BYTES_MARC);
 
         //Creamos un Buffer de Bytes para juntar los 3 arrays y conventirlos en 1
-        byte[] registroRes = ByteBuffer.allocate(CANT_BYTES_MAT + CANT_BYTES_MOD + CANT_BYTES_MARC)
+        byte[] registroRes = ByteBuffer.allocate(CANT_TOT_BYTES)
                 .put(arrayMat)
                 .put(arrayMar)
                 .put(arrayMod)
@@ -148,7 +142,7 @@ public class BBDD {
      *
      * @return
      */
-    private void actualizarVariableReg() {
+    private void actualizarVariableReg() throws BBDDException {
         List<byte[]> conjuntoBytes = new ArrayList<>();
 
         try (RandomAccessFile archivo = new RandomAccessFile(ruta.toFile(), "r")) {
@@ -162,7 +156,7 @@ public class BBDD {
             }
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new BBDDException("No se pudo volcar la información de la base de datos");
         }
         this.contenidoFichero = conjuntoBytes;
         this.numeroRegistros = contenidoFichero.size();
@@ -174,15 +168,21 @@ public class BBDD {
      * @throws BBDDException
      */
     private void escribir() throws BBDDException {
-        for (byte[] r : contenidoFichero) {
-            try {
+        try {
+            // 1. Truncamos (vaciamos) el archivo antes de reescribirlo
+            Files.write(ruta, new byte[0], StandardOpenOption.TRUNCATE_EXISTING);
+
+            // 2. Ahora sí, añadimos la lista actualizada
+            for (byte[] r : contenidoFichero) {
                 Files.write(ruta, r, StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                throw new BBDDException("Looool");
             }
+        } catch (IOException e) {
+            throw new BBDDException("Error al escribir en el fichero: " + e.getMessage());
         }
+
         //Actualizamos el valor de la variable siempre despues de escribir
         actualizarVariableReg();
+
     }
 
     /**
@@ -232,7 +232,8 @@ public class BBDD {
      * @throws BBDDException
      */
     public void borrar(int pos) throws BBDDException {
-        if (pos > numeroRegistros) {
+        int posicionReal = pos -1;
+        if (posicionReal > numeroRegistros) {
             throw new BBDDException("No existe un registro en esa posición");
         }
         contenidoFichero.remove(pos);
@@ -247,28 +248,61 @@ public class BBDD {
      */
     public void cargarCSV(Path ruta) throws BBDDException {
         String separador = ",";
-        try (Stream<String> lineas = Files.lines(ruta)) {
+        try (BufferedReader reader = Files.newBufferedReader(ruta)) {
+            // Leemos la primera línea y la ignoramos (hace el efecto del skip(1))
+            reader.readLine();
 
-            lineas.skip(1)
-                    .forEach(l -> {
-                        String[] valores = l.split(separador);
+            String linea;
+            // Leemos línea a línea hasta el final del documento
+            while ((linea = reader.readLine()) != null) {
+                String[] valores = linea.split(separador);
 
-                        String mat = valores[0];
-                        String mar = valores[1];
-                        String mod = valores[2];
+                String mat = valores[0];
+                String mar = valores[1];
+                String mod = valores[2];
 
-                        byte[] reg = crearArrayDeBytesDeRegistro(mat, mar, mod);
-
-                        contenidoFichero.add(reg);
-                    });
-            escribir();
+                // Como estamos en un bucle normal, la excepción de insertar
+                // se propaga automáticamente al "throws BBDDException" del método
+                insertar(-1, mat, mar, mod);
+            }
 
         } catch (IOException e) {
-            throw new BBDDException("Error: " + e.getMessage());
+            throw new BBDDException("Error al leer el archivo CSV: " + e.getMessage());
         }
     }
 
     public long getNumeroRegistros() {
         return numeroRegistros;
+    }
+
+    /**
+     * Metodo para modificar un registro dada una posición
+     *
+     * @param pos posición a modificar
+     * @throws BBDDException
+     */
+    public void modificarRegistro(int pos, String marca, String modelo) throws BBDDException {
+        int posicionReal = pos -1;
+        byte[] registroAModificar = contenidoFichero.get(posicionReal);
+
+        //Cogemos la matricula del registro
+        byte[] martricula = Arrays.copyOf(registroAModificar, 7);
+
+        //Creamos los arrays del registro nuevo
+        byte[] bytesMarca = rellenarConBytes(MARCA, marca, CANT_BYTES_MARC);
+        byte[] bytesModelo = rellenarConBytes(MODELO, modelo, CANT_BYTES_MOD);
+
+        byte[] registroMod = ByteBuffer.allocate(CANT_TOT_BYTES)
+                .put(martricula)
+                .put(bytesMarca)
+                .put(bytesModelo)
+                .array();
+
+        //eliminamos el registro antiguo y ponemos el nuevo en el mismo lugar
+        contenidoFichero.remove(posicionReal);
+        contenidoFichero.add(posicionReal, registroMod);
+
+        escribir();
+
     }
 }
