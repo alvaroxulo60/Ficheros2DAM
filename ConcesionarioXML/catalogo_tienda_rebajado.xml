@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<catalogoTienda nombreTienda="GAME DAM Central">
+    <videojuegos>
+        <videojuego id="101">
+            <titulo>The Legend of Zelda: Tears of the Kingdom</titulo>
+            <genero>Aventura</genero>
+            <precioEuros>59.49</precioEuros>
+            <fechaLanzamiento>2023-05-12</fechaLanzamiento>
+        </videojuego>
+    </videojuegos>
+</catalogoTienda>

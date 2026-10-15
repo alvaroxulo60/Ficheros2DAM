@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<catalogoTienda nombreTienda="GAME DAM Central">
+    <videojuegos>
+        <videojuego id="101">
+            <titulo>The Legend of Zelda: Tears of the Kingdom</titulo>
+            <genero>Aventura</genero>
+            <precioEuros>69.99</precioEuros>
+            <fechaLanzamiento>2023-05-12</fechaLanzamiento>
+        </videojuego>
+        <videojuego id="102">
+            <titulo>Cyberpunk 2077</titulo>
+            <genero>RPG</genero>
+            <precioEuros>29.99</precioEuros>
+            <fechaLanzamiento>2020-12-10</fechaLanzamiento>
+        </videojuego>
+        <videojuego id="103">
+            <titulo>Hollow Knight</titulo>
+            <genero>Metroidvania</genero>
+            <precioEuros>14.99</precioEuros>
+            <fechaLanzamiento>2017-02-24</fechaLanzamiento>
+        </videojuego>
+    </videojuegos>
+</catalogoTienda>

@@ -192,9 +192,7 @@ public class BBDD {
 
     public void ordenarPorMatricula() throws BBDDException {
         //Ordenamos la coleccion utilizando el metodo compare de Arrays donde comparamos los 7 primeros bytes de cada registro
-        contenidoFichero.sort((b1, b2) -> {
-            return Arrays.compare(b1, 0, 7, b2, 0, 7);
-        });
+        contenidoFichero.sort((b1, b2) -> Arrays.compare(b1, 0, 7, b2, 0, 7));
         escribir();
     }
 
