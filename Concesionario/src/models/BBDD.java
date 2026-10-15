@@ -28,8 +28,6 @@ public class BBDD {
     private List<byte[]> contenidoFichero;
 
 
-
-
     private final Path ruta;
     private final Map<String, Integer> esquemaCampos;
     private final String campoClave;
@@ -70,7 +68,7 @@ public class BBDD {
      * @throws BBDDException
      */
     public void insertar(int pos, String matricula, String marca, String modelo) throws BBDDException {
-        int posicionReal = pos -1;
+        int posicionReal = pos - 1;
         // Si ya existe esa matricula lanzamos una excepción
         if (buscar(matricula) != -1) {
             throw new BBDDException("La Primary key (matrícula) esta repetida");
@@ -87,6 +85,7 @@ public class BBDD {
 
         escribir();
     }
+
 
     /**
      * Rellena un valor con bytes de espacio para cumplir la estructura de la bbdd
@@ -232,7 +231,7 @@ public class BBDD {
      * @throws BBDDException
      */
     public void borrar(int pos) throws BBDDException {
-        int posicionReal = pos -1;
+        int posicionReal = pos - 1;
         if (posicionReal > numeroRegistros) {
             throw new BBDDException("No existe un registro en esa posición");
         }
@@ -282,7 +281,7 @@ public class BBDD {
      * @throws BBDDException
      */
     public void modificarRegistro(int pos, String marca, String modelo) throws BBDDException {
-        int posicionReal = pos -1;
+        int posicionReal = pos - 1;
         byte[] registroAModificar = contenidoFichero.get(posicionReal);
 
         //Cogemos la matricula del registro
