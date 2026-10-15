@@ -33,7 +33,7 @@ public class main {
 
                 switch (opcion) {
                     case 1: // Insertar
-                        int posInsertar = MiEntradaSalida.leerEntero("Introduce la posición donde insertar (-1 para añadir al final): ");
+                        int posInsertar = MiEntradaSalida.leerEnteroPositivo("Introduce la posición donde insertar (-1 para añadir al final): ",false);
                         String matricula = MiEntradaSalida.leerLinea("Introduce la matrícula: \n");
                         String marca = MiEntradaSalida.leerLinea("Introduce la marca: \n");
                         String modelo = MiEntradaSalida.leerLinea("Introduce la modelo: \n");
@@ -52,13 +52,13 @@ public class main {
                         break;
 
                     case 3: // Borrar
-                        int posBorrar = MiEntradaSalida.leerEntero("Introduce la posición del registro a borrar: ");
+                        int posBorrar = MiEntradaSalida.leerEnteroPositivo("Introduce la posición del registro a borrar: ",false);
                         baseDatos.borrar(posBorrar);
                         System.out.println("Registro borrado correctamente.");
                         break;
 
                     case 4: // Modificar (NUEVO MÉTODO)
-                        int posModificar = MiEntradaSalida.leerEntero("Introduce la posición del registro a modificar: ");
+                        int posModificar = MiEntradaSalida.leerEnteroPositivo("Introduce la posición del registro a modificar: ",false);
                         String marcaMod = MiEntradaSalida.leerLinea("Introduce la nueva marca: \n");
                         String modeloMod = MiEntradaSalida.leerLinea("Introduce el nuevo modelo:  \n");
                         baseDatos.modificarRegistro(posModificar, marcaMod, modeloMod);
