@@ -1,0 +1,32 @@
+{
+  "coches": [
+    {
+      "id": 1,
+      "matricula": "2468JKL",
+      "marca": "Toyota",
+      "modelo": "Corolla",
+      "equipamiento": [
+        { "nombre": "Cámara trasera" },
+        { "nombre": "Control de crucero" },
+        { "nombre": "Bluetooth" }
+      ]
+    },
+    {
+      "id": 2,
+      "matricula": "1357MNP",
+      "marca": "Seat",
+      "modelo": "León",
+      "equipamiento": [
+        { "nombre": "Bluetooth" },
+        { "nombre": "Sensores de aparcamiento" }
+      ]
+    },
+    {
+      "id": 3,
+      "matricula": "8642QRS",
+      "marca": "Hyundai",
+      "modelo": "i30",
+      "equipamiento": []
+    }
+  ]
+}

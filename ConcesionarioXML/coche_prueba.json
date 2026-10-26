@@ -1,0 +1,10 @@
+{
+  "id": 4,
+  "matricula": "9753TUV",
+  "marca": "Kia",
+  "modelo": "Ceed",
+  "equipamiento": [
+    { "nombre": "Techo solar" },
+    { "nombre": "Asientos calefactables" }
+  ]
+}

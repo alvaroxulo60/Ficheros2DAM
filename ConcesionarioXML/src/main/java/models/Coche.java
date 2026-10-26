@@ -47,7 +47,7 @@ public class Coche {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -55,7 +55,7 @@ public class Coche {
         return matricula;
     }
 
-    public void setMatricula(String matricula) {
+    private  void setMatricula(String matricula) {
         this.matricula = matricula;
     }
 
