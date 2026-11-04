@@ -279,6 +279,11 @@ public class BBDD {
         }
     }
 
+    /**
+     * Metodo para crear Resumen de la BBDD
+     * @throws BBDDException
+     */
+
     public void crearResumen() throws BBDDException {
 
         Path p = Path.of("informe_concesionario.txt");
