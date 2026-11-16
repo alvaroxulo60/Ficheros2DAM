@@ -1,4 +1,4 @@
-package models;
+package services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,6 +7,9 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import models.Coche;
+import models.Concesionario;
+import models.Equipamiento;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

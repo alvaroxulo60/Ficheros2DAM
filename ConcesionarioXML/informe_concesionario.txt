@@ -1,0 +1,13 @@
+=== INFORME DEL CONCESIONARIO ===
+Número total de coches: 6
+
+--- COCHES POR MARCA ---
+Volkswagen: 1 coches
+Seat: 1 coches
+Renault: 1 coches
+Toyota: 1 coches
+Ford: 1 coches
+Peugeot: 1 coches
+
+--- EQUIPAMIENTO MAS REPETIDO ---
+Llantas de aleación: 2 unidades

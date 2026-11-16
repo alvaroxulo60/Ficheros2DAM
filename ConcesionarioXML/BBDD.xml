@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<concesionario-de-coches>
+    <listado-coches>
+        <coche id="1">
+            <matricula-coche>2468JKL</matricula-coche>
+            <marca>Toyota</marca>
+            <modelo>Corolla</modelo>
+            <equipamiento>
+                <extra>Cámara trasera</extra>
+                <extra>Control de crucero</extra>
+                <extra>Bluetooth</extra>
+            </equipamiento>
+        </coche>
+        <coche id="2">
+            <matricula-coche>1357MNP</matricula-coche>
+            <marca>Seat</marca>
+            <modelo>León</modelo>
+            <equipamiento>
+                <extra>Bluetooth</extra>
+                <extra>Sensores de aparcamiento</extra>
+            </equipamiento>
+        </coche>
+        <coche id="3">
+            <matricula-coche>8642QRS</matricula-coche>
+            <marca>Hyundai</marca>
+            <modelo>i30</modelo>
+            <equipamiento/>
+        </coche>
+        <coche id="4">
+            <matricula-coche>123abc</matricula-coche>
+            <marca>ford</marca>
+            <modelo>focus</modelo>
+            <equipamiento>
+                <extra>mo</extra>
+                <extra>mooo</extra>
+            </equipamiento>
+        </coche>
+    </listado-coches>
+</concesionario-de-coches>

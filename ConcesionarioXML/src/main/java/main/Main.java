@@ -6,7 +6,7 @@ import exception.MiEntrdaSalidaException;
 import io.MiEntradaSalida;
 import io.PropertiesReader;
 import jakarta.xml.bind.JAXBException;
-import models.BBDD;
+import services.BBDD;
 import models.Coche;
 import models.Equipamiento;
 
