@@ -2,30 +2,23 @@ package io;
 
 import exceptions.AppException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertiesReader {
-    private final static Path file = Path.of("config.properties");
+    private static final String FILE_NAME = "/config.properties";
     private Properties p;
     private static PropertiesReader instance = null;
 
     private PropertiesReader() throws AppException {
         p = new Properties();
-        if (!Files.exists(file)) {
-            throw new AppException("❌ ERROR: El archivo config.properties no se encuentra en la ruta: " + file.toAbsolutePath());
-        }
-
-        // Usamos try-with-resources para asegurar que el archivo se cierra
-        try (BufferedReader lector = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+        try (InputStream lector = PropertiesReader.class.getResourceAsStream(FILE_NAME)) {
+            if (lector == null) {
+                throw new AppException("El archivo config.properties no se encuentra en src/main/resources.");
+            }
             p.load(lector);
-
         } catch (IOException e) {
-            System.out.println("❌ ERROR: No se ha podido leer el archivo config.properties. Detalles técnicos: " + e.getMessage());
             throw new AppException(e.getMessage());
         }
     }
