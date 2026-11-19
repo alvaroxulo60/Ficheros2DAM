@@ -1,23 +1,18 @@
 package main;
 
 import exceptions.BBDDException;
-import services.ConexionBBDD;
+import services.SQL;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class main {
     static void main(String[] args) {
         try {
-            ConexionBBDD c = ConexionBBDD.getInstance();
-            Connection con = ConexionBBDD.getConexion();
+            SQL base = new SQL();
 
-            if (!con.isClosed()){
-                System.out.println("sisisis");
-            }
-            con.close();
-        } catch (BBDDException|SQLException e) {
-            System.out.println("nonononono: "+e.getMessage());
+            base.createDatabase();
+            base.createDDBBLite();
+        } catch (BBDDException e) {
+            System.out.println("Error: "+e.getMessage());
         }
     }
 }

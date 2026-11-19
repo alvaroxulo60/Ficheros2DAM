@@ -14,9 +14,11 @@ public class ConexionBBDD {
     private static String url;
     private static String user;
     private static String pass;
+    private static String urlLite;
 
     private static ConexionBBDD instance;
-    private static Connection conexion;
+    private static Connection conexionSQL;
+    private static Connection conexionLite;
 
     private ConexionBBDD() throws BBDDException {
         try {
@@ -24,6 +26,7 @@ public class ConexionBBDD {
             url = p.get("db.URL");
             user = p.get("db.USER");
             pass = p.get("db.PASS");
+            urlLite = p.get("lite.URL");
 
         } catch (AppException e) {
             throw new BBDDException("Error en la conexion: "+ e.getMessage());
@@ -37,10 +40,17 @@ public class ConexionBBDD {
         return instance;
     }
 
-    public static Connection getConexion() throws SQLException {
-        if (conexion == null){
-            conexion = DriverManager.getConnection(url,user,pass);
+    public static Connection getConexionSQL() throws SQLException {
+        if (conexionSQL == null){
+            conexionSQL = DriverManager.getConnection(url,user,pass);
         }
-        return conexion;
+        return conexionSQL;
+    }
+
+    public static Connection getConexionLite() throws SQLException {
+        if (conexionLite == null){
+            conexionLite = DriverManager.getConnection(urlLite);
+        }
+        return conexionLite;
     }
 }

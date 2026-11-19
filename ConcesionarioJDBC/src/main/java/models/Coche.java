@@ -19,4 +19,36 @@ public class Coche {
         this.precio = precio;
         this.idPropietario = idPropietario;
     }
+
+    public Coche(String matricula, String marca, String modelo, List<Extra> extras, double precio) {
+        this.matricula = matricula;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.extras = extras;
+        this.precio = precio;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public List<Extra> getExtras() {
+        return extras;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public int getIdPropietario() {
+        return idPropietario;
+    }
 }
