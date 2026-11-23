@@ -38,4 +38,8 @@ public class Propietario {
     public String getTelefono() {
         return telefono;
     }
+
+    public int getIdPropietario() {
+        return idPropietario;
+    }
 }

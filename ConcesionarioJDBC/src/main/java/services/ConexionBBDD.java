@@ -17,8 +17,6 @@ public class ConexionBBDD {
     private static String urlLite;
 
     private static ConexionBBDD instance;
-    private static Connection conexionSQL;
-    private static Connection conexionLite;
 
     private ConexionBBDD() throws BBDDException {
         try {
@@ -41,16 +39,10 @@ public class ConexionBBDD {
     }
 
     public static Connection getConexionSQL() throws SQLException {
-        if (conexionSQL == null){
-            conexionSQL = DriverManager.getConnection(url,user,pass);
-        }
-        return conexionSQL;
+        return DriverManager.getConnection(url,user,pass);
     }
 
     public static Connection getConexionLite() throws SQLException {
-        if (conexionLite == null){
-            conexionLite = DriverManager.getConnection(urlLite);
-        }
-        return conexionLite;
+        return DriverManager.getConnection(urlLite);
     }
 }

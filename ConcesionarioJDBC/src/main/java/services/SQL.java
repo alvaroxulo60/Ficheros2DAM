@@ -3,11 +3,10 @@ package services;
 import exceptions.BBDDException;
 import models.Propietario;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class SQL extends BBDD {
 
@@ -25,8 +24,7 @@ public class SQL extends BBDD {
         String useSchema = "use concesionario";
 
 
-        String dropPropietarios = "Drop table if exists propietarios";
-        String createTablePropietarios = "CREATE TABLE propietarios (" +
+        String createTablePropietarios = "CREATE TABLE IF NOT EXISTS propietarios (" +
                 "    id_propietario INT AUTO_INCREMENT PRIMARY KEY," +
                 "    dni VARCHAR(10) NOT NULL," +
                 "    nombre VARCHAR(100) NOT NULL," +
@@ -34,8 +32,7 @@ public class SQL extends BBDD {
                 "    telefono VARCHAR(15) NULL" +
                 ");";
 
-        String dropCoches = "drop table if exists coches";
-        String createTableCoches = "CREATE TABLE coches (" +
+        String createTableCoches = "CREATE TABLE IF NOT EXISTS coches (" +
                 "    matricula VARCHAR(10) PRIMARY KEY," +
                 "    marca VARCHAR(50) NOT NULL," +
                 "    modelo VARCHAR(50) NOT NULL," +
@@ -46,8 +43,7 @@ public class SQL extends BBDD {
                 "        FOREIGN KEY (id_propietario) REFERENCES propietarios(id_propietario)" +
                 ");";
 
-        String dropTraspasos = "drop table if exists traspasos";
-        String createTableTraspasos = "CREATE TABLE traspasos (" +
+        String createTableTraspasos = "CREATE TABLE IF NOT EXISTS traspasos (" +
                 "    id_traspaso INT AUTO_INCREMENT PRIMARY KEY," +
                 "    matricula_coche VARCHAR(10) NOT NULL," +
                 "    id_vendedor INT NULL," +
@@ -61,16 +57,19 @@ public class SQL extends BBDD {
                 "        FOREIGN KEY (id_comprador) REFERENCES propietarios(id_propietario)" +
                 ");";
 
-        List<String> sentencias = List.of(createSchema, useSchema, dropTraspasos, dropCoches, dropPropietarios, createTablePropietarios, createTableCoches, createTableTraspasos);
 
-        try (Connection connection = ConexionBBDD.getConexionSQL();
-             Statement statement = connection.createStatement()) {
+        List<String> sentencias = List.of(
+                createSchema,
+                useSchema,
+                createTablePropietarios,
+                createTableCoches,
+                createTableTraspasos
+        );
 
+        try (Statement statement = connection.createStatement()) {
             for (String sql : sentencias) {
                 statement.execute(sql);
             }
-
-
         } catch (SQLException e) {
             throw new BBDDException("Error en la bbdd: " + e.getMessage());
         }

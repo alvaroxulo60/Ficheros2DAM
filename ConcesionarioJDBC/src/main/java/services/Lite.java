@@ -20,11 +20,7 @@ public class Lite extends BBDD {
     public void crearTablas() throws BBDDException {
         String enableForeignKeys = "PRAGMA foreign_keys = ON";
 
-        String dropTraspasos = "DROP TABLE IF EXISTS traspasos";
-        String dropCoches = "DROP TABLE IF EXISTS coches";
-        String dropPropietarios = "DROP TABLE IF EXISTS propietarios";
-
-        String createTablePropietarios = "CREATE TABLE propietarios (" +
+        String createTablePropietarios = "CREATE TABLE IF NOT EXISTS propietarios (" +
                 "    id_propietario INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "    dni VARCHAR(10) NOT NULL," +
                 "    nombre VARCHAR(100) NOT NULL," +
@@ -32,7 +28,7 @@ public class Lite extends BBDD {
                 "    telefono VARCHAR(15) NULL" +
                 ")";
 
-        String createTableCoches = "CREATE TABLE coches (" +
+        String createTableCoches = "CREATE TABLE IF NOT EXISTS coches (" +
                 "    matricula VARCHAR(10) PRIMARY KEY," +
                 "    marca VARCHAR(50) NOT NULL," +
                 "    modelo VARCHAR(50) NOT NULL," +
@@ -43,7 +39,7 @@ public class Lite extends BBDD {
                 "        FOREIGN KEY (id_propietario) REFERENCES propietarios(id_propietario)" +
                 ")";
 
-        String createTableTraspasos = "CREATE TABLE traspasos (" +
+        String createTableTraspasos = "CREATE TABLE IF NOT EXISTS traspasos (" +
                 "    id_traspaso INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "    matricula_coche VARCHAR(10) NOT NULL," +
                 "    id_vendedor INTEGER NULL," +
@@ -59,16 +55,12 @@ public class Lite extends BBDD {
 
         List<String> sentencias = List.of(
                 enableForeignKeys,
-                dropTraspasos,
-                dropCoches,
-                dropPropietarios,
                 createTablePropietarios,
                 createTableCoches,
                 createTableTraspasos
         );
 
-        try (Connection connection = ConexionBBDD.getConexionLite();
-             Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
 
             for (String sql : sentencias) {
                 statement.execute(sql);
