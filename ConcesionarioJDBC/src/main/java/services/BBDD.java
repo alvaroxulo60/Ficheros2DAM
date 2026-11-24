@@ -58,51 +58,53 @@ public abstract class BBDD {
     }
 
     public void insertarDesdeCSV(Path ruta) throws BBDDException {
-        boolean autoCommitOriginal = true;
+        String separadorGeneral = ";";
+        String separadorExtra = "\\|";
+
         try (BufferedReader reader = Files.newBufferedReader(ruta)) {
-            reader.readLine(); // Cabecera
+            reader.readLine();
+
             String linea;
+
             List<Coche> coches = new ArrayList<>();
-            int numeroLinea = 1;
 
             while ((linea = reader.readLine()) != null) {
-                numeroLinea++;
-                if (linea.isBlank()) continue;
-                String[] valores = linea.split(";", -1);
-                if (valores.length != 5) {
-                    throw new BBDDException("Formato CSV no válido en la línea " + numeroLinea);
-                }
+                String[] valores = linea.split(separadorGeneral);
 
-                try {
-                    List<Extra> equipamientos = new ArrayList<>();
-                    String extras = valores[3].trim();
-                    if (!extras.isEmpty()) {
-                        for (String extra : extras.split("\\|")) {
-                            if (!extra.isBlank()) equipamientos.add(new Extra(extra.trim()));
-                        }
+                String matricula = valores[0];
+                String marca = valores[1];
+                String modelo = valores[2];
+                String extras = valores.length > 3 ? valores[3].trim():"" ;
+                double precio = Double.parseDouble(valores[4].trim());
+
+
+
+                List<Extra> equipamientos = new ArrayList<>();
+
+                if (!extras.isEmpty()){
+                    for (String s : extras.split(separadorExtra)) {
+                        equipamientos.add(new Extra(s));
                     }
-                    coches.add(new Coche(valores[0].trim(), valores[1].trim(), valores[2].trim(),
-                            equipamientos, Double.parseDouble(valores[4].trim())));
-                } catch (NumberFormatException e) {
-                    throw new BBDDException("Precio no válido en la línea " + numeroLinea);
+                }
+
+                Coche c1 = new Coche(matricula, marca, modelo, equipamientos, precio);
+
+                coches.add(c1);
+
+            }
+            connection.setAutoCommit(false);
+            for (Coche c2 : coches) {
+                if (!insertarCoche(c2)) {
+                    connection.rollback();
+                    break;
                 }
             }
-
-            autoCommitOriginal = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            try {
-                for (Coche coche : coches) insertarCoche(coche);
-                connection.commit();
-            } catch (BBDDException | SQLException e) {
-                connection.rollback();
-                throw new BBDDException("No se pudo importar el CSV; se revirtieron los cambios: " + e.getMessage());
-            } finally {
-                connection.setAutoCommit(autoCommitOriginal);
-            }
+            connection.commit();
+            connection.setAutoCommit(true);
         } catch (IOException e) {
-            throw new BBDDException("No se ha podido leer el archivo CSV: " + e.getMessage());
+            throw new BBDDException("No se ha podido encontrar el archivo csv");
         } catch (SQLException e) {
-            throw new BBDDException("Error durante la importación del CSV: " + e.getMessage());
+            throw new BBDDException("");
         }
     }
 
