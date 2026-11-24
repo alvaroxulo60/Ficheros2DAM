@@ -303,4 +303,7 @@ public class MiEntradaSalida {
         return texto.charAt(0);
     }
 
+    public static void imprimirMensaje(String s) {
+        System.out.println(s);
+    }
 }

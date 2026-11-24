@@ -51,4 +51,16 @@ public class Coche {
     public int getIdPropietario() {
         return idPropietario;
     }
+
+    @Override
+    public String toString() {
+        return "Coche{" +
+                "matricula='" + matricula + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", extras=" + extras +
+                ", precio=" + precio +
+                ", idPropietario=" + idPropietario +
+                '}';
+    }
 }

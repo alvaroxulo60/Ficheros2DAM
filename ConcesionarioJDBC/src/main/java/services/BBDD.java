@@ -290,18 +290,23 @@ public abstract class BBDD {
     public void traspasarCoche(String matricula, int idPropietario,int idVendedor, double montoEconomico) throws BBDDException {
         String verificarComprador = "Select * from propietarios where id_propietario = ?";
         String verificarCoche = "Select * from coches where matricula = ?";
+        String verificarVendedor = "Select * from propietarios where id_propietario = ?";
 
         try(PreparedStatement pst1 = connection.prepareStatement(verificarComprador);
-        PreparedStatement pst2 = connection.prepareStatement(verificarCoche)){
+        PreparedStatement pst2 = connection.prepareStatement(verificarCoche);
+        PreparedStatement pst = connection.prepareStatement(verificarVendedor)){
 
             pst1.setInt(1,idPropietario);
             pst2.setString(1,matricula);
+            pst.setInt(1,idVendedor);
 
             if (!pst1.executeQuery().next()){
                 throw new BBDDException("No existe ese propietario");
             }
             if (!pst2.executeQuery().next()){
                 throw new BBDDException("No existe ese coche");
+            }if (!pst.executeQuery().next()){
+                idVendedor = 0;
             }
 
             String setPropietario = "update coches set " +

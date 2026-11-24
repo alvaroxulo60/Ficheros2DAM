@@ -10,4 +10,11 @@ public class Extra {
     public String getNombre() {
         return nombre;
     }
+
+    @Override
+    public String toString() {
+        return "Extra{" +
+                "nombre='" + nombre + '\'' +
+                '}';
+    }
 }
