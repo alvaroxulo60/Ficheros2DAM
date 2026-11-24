@@ -206,7 +206,7 @@ public class Main {
         PropertiesReader p = PropertiesReader.getInstance();
 
         Path rutaDefault = Path.of(p.get("csv.ruta"));
-        if (MiEntradaSalida.leerSN("Quieres usar la ruta predeterminada") == 'S'){
+        if (MiEntradaSalida.leerSN("¿Quieres usar la ruta predeterminada(Introduce s o n)?\n") == 'S'){
             bbdd.insertarDesdeCSV(rutaDefault);
             MiEntradaSalida.imprimirMensaje("Importación completada");
         }
