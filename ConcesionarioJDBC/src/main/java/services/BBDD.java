@@ -214,7 +214,7 @@ public abstract class BBDD {
                 .collect(Collectors.joining("|"));
     }
 
-    private List<Extra> formatearResultSetDeExtras(String cadena) {
+    protected List<Extra> formatearResultSetDeExtras(String cadena) {
 
         if (cadena == null || cadena.isEmpty()) {
             return new ArrayList<>();

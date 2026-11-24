@@ -1,9 +1,13 @@
 package services;
 
 import exceptions.BBDDException;
-import models.Propietario;
+import models.Coche;
+import models.Extra;
 
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,13 +61,26 @@ public class SQL extends BBDD {
                 "        FOREIGN KEY (id_comprador) REFERENCES propietarios(id_propietario)" +
                 ");";
 
+        String dropProcedure = "drop procedure if exists sp_coches_por_marca";
+
+        String createProcedure = """
+                CREATE PROCEDURE sp_coches_por_marca(IN p_marca VARCHAR(50))
+                BEGIN
+                    SELECT matricula, marca, modelo, extras, precio, id_propietario
+                    FROM coches
+                    WHERE marca = p_marca;
+                END
+                """;
+
 
         List<String> sentencias = List.of(
                 createSchema,
                 useSchema,
                 createTablePropietarios,
                 createTableCoches,
-                createTableTraspasos
+                createTableTraspasos,
+                dropProcedure,
+                createProcedure
         );
 
         try (Statement statement = connection.createStatement()) {
@@ -72,6 +89,35 @@ public class SQL extends BBDD {
             }
         } catch (SQLException e) {
             throw new BBDDException("Error en la bbdd: " + e.getMessage());
+        }
+    }
+
+    public List<Coche> ejecutarProcedimiento(String marcaABuscar) throws BBDDException {
+        String sql = "{CALL sp_coches_por_marca(?)}";
+
+        try (CallableStatement cs = super.connection.prepareCall(sql)) {
+            cs.setString(1, marcaABuscar);
+            List<Coche> coches = new ArrayList<>();
+            try (ResultSet rs = cs.executeQuery()) {
+                while (rs.next()) {
+                    String matricula = rs.getString(1);
+                    String marca = rs.getString(2);
+                    String modelo = rs.getString(3);
+                    List<Extra> extras = formatearResultSetDeExtras(rs.getString(4));
+                    double precio = rs.getDouble(5);
+                    int idPropietario = rs.getInt(6);
+                    boolean tienePropietario = !rs.wasNull();
+
+                    if (tienePropietario) {
+                        coches.add(new Coche(matricula, marca, modelo, extras, precio, idPropietario));
+                    } else {
+                        coches.add(new Coche(matricula, marca, modelo, extras, precio));
+                    }
+                }
+                return coches;
+            }
+        } catch (SQLException e) {
+            throw new BBDDException("Error al hacer el procedimiento");
         }
     }
 
