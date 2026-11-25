@@ -6,9 +6,9 @@ Ventajas:
 
 
 
-Estandarización, la misma API te permite conectarte a varias bases de datos como SQLite y MySQL
+- Estandarización, la misma API te permite conectarte a varias bases de datos como SQLite y MySQL
 
-Tiene un fácil control de uso con Connection, Statement, PreparedStatements y ResultSet
+- Tiene un fácil control de uso con Connection, Statement, PreparedStatements y ResultSet
 
 
 
@@ -16,11 +16,11 @@ Desventajas:
 
 
 
-Tienes que mapear los objetos a mano
+- Tienes que mapear los objetos a mano
 
-Control constante de SQLExceptions
+- Control constante de SQLExceptions
 
-Mucho código repetido para recorrer ResultSet y cerrar recursos
+- Mucho código repetido para recorrer ResultSet y cerrar recursos
 
 
 
@@ -36,11 +36,11 @@ Ventajas:
 
 
 
-Configuración nula, no requiere instalar nada ni configurar
+- Configuración nula, no requiere instalar nada ni configurar
 
-Fácil portabilidad, es un fichero .db/.SQLite	
+- Fácil portabilidad, es un fichero .db/.SQLite	
 
-Bajo consumo
+- Bajo consumo
 
 
 
@@ -48,5 +48,21 @@ Desventajas:
 
 
 
-No esta pensada para varios usuarios 
+- No está pensada para varios usuarios 
+
+- Carece de seguridad
+
+### **Base de datos de servidor (Mysql)**
+
+Ventajas:
+
+- Diseñada para soportar muchas conexiones
+
+- Seguridad y control
+- Soporta grandes cantidades de datos
+
+Desventajas:
+
+- Mayor complejidad de despliegue
+- Mayor consumo de recursos
 
