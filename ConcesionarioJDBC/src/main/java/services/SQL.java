@@ -94,7 +94,12 @@ public class SQL extends BBDD {
         }
     }
 
-    /** Busca y devuelve los coches que coinciden con la marca indicada. */
+    /**
+     * Metodo para ejecutar un procedimiento almacenado en la bbdd
+     * @param marcaABuscar marca de coches a buscar
+     * @return una lista con los coches con marca coincidentes
+     * @throws BBDDException
+     */
     public List<Coche> ejecutarProcedimiento(String marcaABuscar) throws BBDDException {
         String sql = "{CALL sp_coches_por_marca(?)}";
 

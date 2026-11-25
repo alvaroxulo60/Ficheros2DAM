@@ -74,7 +74,11 @@ public abstract class BBDD {
         }
     }
 
-    /** Lee coches de un archivo CSV y los guarda en la base de datos. */
+    /**
+     * Insertar coches desde un archivo CSV
+      * @param ruta ruta al archivo csv
+     * @throws BBDDException
+     */
     public void insertarDesdeCSV(Path ruta) throws BBDDException {
         String separadorGeneral = ";";
         String separadorExtra = "\\|";
@@ -126,21 +130,31 @@ public abstract class BBDD {
         }
     }
 
-    /** Devuelve los coches que no tienen propietario. */
+    /**
+     * Metodo para listar los coches sin propietarios
+      * @return devuelve la lista
+     * @throws BBDDException
+     */
     public List<Coche> mostrarCochesSinPropietarios() throws BBDDException {
         String sql = "Select * from coches where id_propietario IS NULL";
 
         return getCoches(sql);
     }
 
-    /** Devuelve los coches que tienen propietario. */
-    public List<Coche> mostrarCochesConPropietarios() throws BBDDException {
+    /**
+     * Metodo para listar los coches con propietarios
+     * @return devuelve la lista
+     * @throws BBDDException
+     */    public List<Coche> mostrarCochesConPropietarios() throws BBDDException {
         String sql = "Select * from coches where id_propietario IS not NULL";
 
         return getCoches(sql);
     }
 
-    /** Genera un archivo con un resumen de los coches y sus extras. */
+    /**
+     * Genera un iforme de la bbdd
+      * @throws BBDDException
+     */
     public void generarInformeResumen() throws BBDDException {
         StringBuilder informe = new StringBuilder("INFORME RESUMEN DEL CONCESIONARIO\n\n");
         String sqlTotal = "SELECT COUNT(*) FROM coches";
@@ -195,7 +209,12 @@ public abstract class BBDD {
         }
     }
 
-    /** Convierte el resultado de una consulta en una lista de coches. */
+    /**
+     * Metodo para conseguir los coches de la bbdd
+     * @param sql sentencia sql a ejecutar
+     * @return devuelve una lista de coches
+     * @throws BBDDException
+     */
     private List<Coche> getCoches(String sql) throws BBDDException {
         try (Statement stm = connection.createStatement();
              ResultSet rs = stm.executeQuery(sql)) {
@@ -226,7 +245,11 @@ public abstract class BBDD {
     }
 
 
-    /** Junta los nombres de los extras en un texto para guardarlos. */
+    /**
+     * Formatea la lista de extras a una cadena de string para introducirlo a la base de datos
+      * @param extras lista de extras
+     * @return el string
+     */
     private String formatearExtras(List<Extra> extras) {
         if (extras == null || extras.isEmpty()) {
             return "";
@@ -237,7 +260,11 @@ public abstract class BBDD {
                 .collect(Collectors.joining("|"));
     }
 
-    /** Convierte el texto de extras guardado en una lista de extras. */
+    /**
+     * Convierte un String de extras en una lista de extras
+      * @param cadena String con todos los extras
+     * @return
+     */
     protected List<Extra> formatearResultSetDeExtras(String cadena) {
 
         if (cadena == null || cadena.isEmpty()) {
@@ -258,7 +285,11 @@ public abstract class BBDD {
     }
 
 
-    /** Actualiza los datos del coche indicado por su matrícula. */
+    /**
+     * Metodo para modificar un coche por matrícula
+     * @param c Coche con los datos nuevos pero misma matrícula
+     * @throws BBDDException
+     */
     public void modificarCoche(Coche c) throws BBDDException {
         String sql = "update coches SET " +
                 "marca  = ?," +
@@ -283,7 +314,11 @@ public abstract class BBDD {
         }
     }
 
-    /** Elimina el coche y los traspasos asociados a su matrícula. */
+    /**
+     * Metodo para eliminar un coche y todos sus datos asociados
+      * @param matricula matrícula del coche
+     * @throws BBDDException
+     */
     public void borrarCoche(String matricula) throws BBDDException {
 
         String borrarTraspaso = "Delete from traspasos where matricula_coche = ?";
@@ -313,7 +348,14 @@ public abstract class BBDD {
         }
     }
 
-    /** Cambia el propietario del coche y guarda los datos del traspaso. */
+    /**
+     * Metodo para hacer un traspaso de un coche
+     * @param matricula matrícula del coche a traspasar
+     * @param idPropietario id del nuevo propietario del coche
+     * @param idVendedor id del antiguo propietario del coche
+     * @param montoEconomico cantidad economica del traspaso
+     * @throws BBDDException
+     */
     public void traspasarCoche(String matricula, int idPropietario,int idVendedor, double montoEconomico) throws BBDDException {
 
         if (idPropietario == idVendedor) {
@@ -395,7 +437,11 @@ public abstract class BBDD {
         }
     }
 
-    /** Devuelve la lista de propietarios registrados. */
+    /**
+     * Metodo para listar los propietarios
+      * @return la lista de todos los propietarios
+     * @throws BBDDException
+     */
     public List<Propietario> listarPropietarios() throws BBDDException {
         String sql = "Select * from propietarios";
         List<Propietario> propietarios = new ArrayList<>();
