@@ -11,11 +11,13 @@ import java.util.List;
 public class Lite extends BBDD {
     ConexionBBDD c;
 
+    /** Abre la conexión con SQLite. */
     public Lite() throws BBDDException, SQLException {
         c = ConexionBBDD.getInstance();
         super(ConexionBBDD.getConexionLite());
     }
 
+    /** Crea las tablas necesarias en SQLite si todavía no existen. */
     @Override
     public void crearTablas() throws BBDDException {
         String enableForeignKeys = "PRAGMA foreign_keys = ON";

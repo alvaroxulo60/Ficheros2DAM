@@ -20,10 +20,20 @@ import java.util.stream.Collectors;
 public abstract class BBDD {
     protected final Connection connection;
 
+    /**
+     * Constructor de la clase
+     * @param connection conexion de la bbdd
+     */
     protected BBDD(Connection connection) {
         this.connection = connection;
     }
 
+    /**
+     * Metodo para insertar un propietario
+      * @param propietario propietario a insertar
+     * @return true si se ha insertado correctamente
+     * @throws BBDDException
+     */
     public boolean insertPropietario(Propietario propietario)
             throws BBDDException {
         String sql = " INSERT INTO propietarios (dni, nombre, apellidos, telefono) VALUES (?, ?, ?, ?)";
@@ -39,8 +49,15 @@ public abstract class BBDD {
         }
     }
 
+    /** Crea las tablas necesarias para guardar los datos. */
     public abstract void crearTablas() throws BBDDException;
 
+    /**
+     * Metodo para insertar un coche
+      * @param coche coche a insertar
+     * @return true si se insertó con exito
+     * @throws BBDDException
+     */
     public boolean insertarCoche(Coche coche) throws BBDDException {
         String sql = "insert into coches (matricula,marca,modelo,extras,precio) values (?,?,?,?,?)";
 
@@ -57,6 +74,7 @@ public abstract class BBDD {
         }
     }
 
+    /** Lee coches de un archivo CSV y los guarda en la base de datos. */
     public void insertarDesdeCSV(Path ruta) throws BBDDException {
         String separadorGeneral = ";";
         String separadorExtra = "\\|";
@@ -108,18 +126,21 @@ public abstract class BBDD {
         }
     }
 
+    /** Devuelve los coches que no tienen propietario. */
     public List<Coche> mostrarCochesSinPropietarios() throws BBDDException {
         String sql = "Select * from coches where id_propietario IS NULL";
 
         return getCoches(sql);
     }
 
+    /** Devuelve los coches que tienen propietario. */
     public List<Coche> mostrarCochesConPropietarios() throws BBDDException {
         String sql = "Select * from coches where id_propietario IS not NULL";
 
         return getCoches(sql);
     }
 
+    /** Genera un archivo con un resumen de los coches y sus extras. */
     public void generarInformeResumen() throws BBDDException {
         StringBuilder informe = new StringBuilder("INFORME RESUMEN DEL CONCESIONARIO\n\n");
         String sqlTotal = "SELECT COUNT(*) FROM coches";
@@ -174,6 +195,7 @@ public abstract class BBDD {
         }
     }
 
+    /** Convierte el resultado de una consulta en una lista de coches. */
     private List<Coche> getCoches(String sql) throws BBDDException {
         try (Statement stm = connection.createStatement();
              ResultSet rs = stm.executeQuery(sql)) {
@@ -204,6 +226,7 @@ public abstract class BBDD {
     }
 
 
+    /** Junta los nombres de los extras en un texto para guardarlos. */
     private String formatearExtras(List<Extra> extras) {
         if (extras == null || extras.isEmpty()) {
             return "";
@@ -214,6 +237,7 @@ public abstract class BBDD {
                 .collect(Collectors.joining("|"));
     }
 
+    /** Convierte el texto de extras guardado en una lista de extras. */
     protected List<Extra> formatearResultSetDeExtras(String cadena) {
 
         if (cadena == null || cadena.isEmpty()) {
@@ -234,6 +258,7 @@ public abstract class BBDD {
     }
 
 
+    /** Actualiza los datos del coche indicado por su matrícula. */
     public void modificarCoche(Coche c) throws BBDDException {
         String sql = "update coches SET " +
                 "marca  = ?," +
@@ -258,6 +283,7 @@ public abstract class BBDD {
         }
     }
 
+    /** Elimina el coche y los traspasos asociados a su matrícula. */
     public void borrarCoche(String matricula) throws BBDDException {
 
         String borrarTraspaso = "Delete from traspasos where matricula_coche = ?";
@@ -287,7 +313,13 @@ public abstract class BBDD {
         }
     }
 
+    /** Cambia el propietario del coche y guarda los datos del traspaso. */
     public void traspasarCoche(String matricula, int idPropietario,int idVendedor, double montoEconomico) throws BBDDException {
+
+        if (idPropietario == idVendedor) {
+            throw new BBDDException("El comprador y el vendedor no pueden ser la misma persona");
+        }
+
         String verificarComprador = "Select * from propietarios where id_propietario = ?";
         String verificarCoche = "Select * from coches where matricula = ?";
         String verificarVendedor = "Select * from propietarios where id_propietario = ?";
@@ -303,14 +335,28 @@ public abstract class BBDD {
             if (!pst1.executeQuery().next()){
                 throw new BBDDException("No existe ese propietario");
             }
-            if (!pst2.executeQuery().next()){
-                throw new BBDDException("No existe ese coche");
-            }if (!pst.executeQuery().next()){
-                idVendedor = 0;
+            try (ResultSet rsCoche = pst2.executeQuery()) {
+                if (!rsCoche.next()) {
+                    throw new BBDDException("No existe ese coche");
+                }
+
+                Integer duenoActual = (Integer) rsCoche.getObject("id_propietario");
+
+                if (duenoActual == null) {
+                    // El coche no tiene dueño previo: solo se permite si no se indicó vendedor (p. ej. idVendedor <= 0)
+                    if (idVendedor > 0) {
+                        throw new BBDDException("El coche no tiene un propietario asignado actualmente");
+                    }
+                } else {
+                    // El coche sí tiene dueño: el vendedor indicado debe coincidir con él
+                    if (duenoActual != idVendedor) {
+                        throw new BBDDException("El vendedor indicado no es el propietario actual del coche");
+                    }
+                }
             }
 
             String setPropietario = "update coches set " +
-                    "id_propietario = ?" +
+                    "id_propietario = ? " +
                     "where matricula = ?";
 
             String setTraspaso = "Insert into traspasos (matricula_coche,id_vendedor,id_comprador,monto_economico) values (?,?,?,?)";
@@ -321,7 +367,12 @@ public abstract class BBDD {
                 pst3.setString(2,matricula);
 
                 pst4.setString(1,matricula);
-                pst4.setInt(2,idVendedor);
+
+                if (!pst.executeQuery().next()){
+                    pst4.setNull(2, Types.INTEGER);
+                }else {
+                    pst4.setInt(2, idVendedor);
+                }
                 pst4.setInt(3,idPropietario);
                 pst4.setDouble(4,montoEconomico);
 
@@ -344,6 +395,30 @@ public abstract class BBDD {
         }
     }
 
+    /** Devuelve la lista de propietarios registrados. */
+    public List<Propietario> listarPropietarios() throws BBDDException {
+        String sql = "Select * from propietarios";
+        List<Propietario> propietarios = new ArrayList<>();
+
+        try(Statement st = connection.createStatement()){
+            try (ResultSet rs = st.executeQuery(sql)){
+                while (rs.next()){
+                    int id = rs.getInt(1);
+                    String dni = rs.getString(2);
+                    String nombre = rs.getString(3);
+                    String apellido = rs.getString(4);
+                    String numero = rs.getString(5);
+
+                    propietarios.add(new Propietario(id,dni,nombre,apellido,numero));
+                }
+                return propietarios;
+            }
+        } catch (SQLException e) {
+            throw new BBDDException("Error en la base de datos: "+e.getMessage());
+        }
+    }
+
+    /** Cierra la conexión con la base de datos. */
     public void close() throws SQLException {
         connection.close();
     }

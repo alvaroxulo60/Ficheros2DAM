@@ -16,11 +16,13 @@ public class SQL extends BBDD {
 
     private ConexionBBDD c;
 
+    /** Abre la conexión con MySQL. */
     public SQL() throws BBDDException, SQLException {
         c = ConexionBBDD.getInstance();
         super(ConexionBBDD.getConexionSQL());
     }
 
+    /** Crea las tablas y el procedimiento de búsqueda en MySQL. */
     @Override
     public void crearTablas() throws BBDDException {
 
@@ -92,6 +94,7 @@ public class SQL extends BBDD {
         }
     }
 
+    /** Busca y devuelve los coches que coinciden con la marca indicada. */
     public List<Coche> ejecutarProcedimiento(String marcaABuscar) throws BBDDException {
         String sql = "{CALL sp_coches_por_marca(?)}";
 

@@ -22,6 +22,7 @@ public class Main {
 
     private static BBDD bbdd = null;
 
+    /** Mantiene el menú abierto y ejecuta la opción que elige el usuario. */
     public static void main(String[] args) {
         boolean salir = false;
 
@@ -94,6 +95,7 @@ public class Main {
         }
     }
 
+    /** Muestra las opciones disponibles y el estado de la conexión. */
     private static void mostrarMenu() {
         MiEntradaSalida.imprimirMensaje("\n--- GESTIÓN CONCESIONARIO ---");
         if (bbdd == null) {
@@ -116,7 +118,7 @@ public class Main {
         MiEntradaSalida.imprimirMensaje("0. Salir");
     }
 
-    // 1. Conectar BBDD
+    /** Pide el tipo de base de datos y trata de conectarse a ella. */
     private static void conectarBBDD() throws MiEntrdaSalidaException, BBDDException {
         MiEntradaSalida.imprimirMensaje("1) SQLite");
         MiEntradaSalida.imprimirMensaje("2) MySQL");
@@ -143,13 +145,13 @@ public class Main {
         }
     }
 
-    // 2. Inicializar/Crear Tablas
+    /** Crea las tablas necesarias en la base de datos. */
     private static void inicializarTablas() throws BBDDException {
         bbdd.crearTablas();
         MiEntradaSalida.imprimirMensaje("Tablas verificadas/creadas correctamente.");
     }
 
-    // 3. Registrar Propietario
+    /** Pide los datos de una persona y la guarda como propietario. */
     private static void registrarPropietario() throws MiEntrdaSalidaException, BBDDException {
         String dni = MiEntradaSalida.leerLinea("DNI del propietario: ");
         String nombre = MiEntradaSalida.leerLinea("Nombre: ");
@@ -161,7 +163,7 @@ public class Main {
         MiEntradaSalida.imprimirMensaje("Propietario registrado con éxito.");
     }
 
-    // 4. Insertar Coche (sin propietario -> pertenece al concesionario)
+    /** Pide los datos de un coche y lo añade al concesionario. */
     private static void insertarCoche() throws MiEntrdaSalidaException, BBDDException {
         String matricula = MiEntradaSalida.leerLinea("Matrícula: ");
         String marca = MiEntradaSalida.leerLinea("Marca: ");
@@ -174,6 +176,7 @@ public class Main {
         MiEntradaSalida.imprimirMensaje("Coche añadido al concesionario.");
     }
 
+    /** Pregunta por los extras del coche y devuelve los que se hayan indicado. */
     private static List<Extra> leerEquipamiento() {
         List<Extra> equipamiento = new ArrayList<>();
         while (confirmarAnadirExtra()) {
@@ -187,6 +190,7 @@ public class Main {
         return equipamiento;
     }
 
+    /** Pregunta si se quiere añadir otro extra y válida la respuesta. */
     private static boolean confirmarAnadirExtra() {
         while (true) {
             String respuesta = MiEntradaSalida.leerLinea("¿Añadir un extra? (S/N): ").trim();
@@ -200,7 +204,7 @@ public class Main {
         }
     }
 
-    // 5. Importar Coches (CSV) de forma transaccional
+    /** Importa coches desde la ruta predeterminada o desde una ruta indicada. */
     private static void importarCochesCSV() throws MiEntrdaSalidaException, BBDDException, AppException {
 
         PropertiesReader p = PropertiesReader.getInstance();
@@ -209,13 +213,14 @@ public class Main {
         if (MiEntradaSalida.leerSN("¿Quieres usar la ruta predeterminada(Introduce s o n)?\n") == 'S'){
             bbdd.insertarDesdeCSV(rutaDefault);
             MiEntradaSalida.imprimirMensaje("Importación completada");
+        }else {
+            String rutaCSV = MiEntradaSalida.leerLinea("Ruta del fichero CSV: ");
+            bbdd.insertarDesdeCSV(Path.of(rutaCSV));
         }
-        String rutaCSV = MiEntradaSalida.leerLinea("Ruta del fichero CSV: ");
-        bbdd.insertarDesdeCSV(Path.of(rutaCSV));
         MiEntradaSalida.imprimirMensaje("Importación completada");
     }
 
-    // 6. Listar Coches (Concesionario - sin propietario)
+    /** Muestra los coches que todavía pertenecen al concesionario. */
     private static void listarCochesConcesionario() throws BBDDException {
         MiEntradaSalida.imprimirMensaje("\n--- COCHES EN CONCESIONARIO ---");
         for (Coche c : bbdd.mostrarCochesSinPropietarios()) {
@@ -223,7 +228,7 @@ public class Main {
         }
     }
 
-    // 7. Listar Coches (Propietarios - con DNI mediante JOIN)
+    /** Muestra los coches que tienen un propietario. */
     private static void listarCochesPropietarios() throws BBDDException {
         MiEntradaSalida.imprimirMensaje("\n--- COCHES CON PROPIETARIO ---");
         for (Coche c : bbdd.mostrarCochesConPropietarios()) {
@@ -231,7 +236,7 @@ public class Main {
         }
     }
 
-    // 8. Modificar Coche (excepto matrícula)
+    /** Pide los datos actualizados de un coche y guarda los cambios. */
     private static void modificarCoche() throws MiEntrdaSalidaException, BBDDException {
         String matricula = MiEntradaSalida.leerLinea("Matrícula del coche a modificar: ");
         String marca = MiEntradaSalida.leerLinea("Marca: ");
@@ -243,16 +248,17 @@ public class Main {
         MiEntradaSalida.imprimirMensaje("Coche modificado correctamente.");
     }
 
-    // 9. Borrar Coche
+    /** Pide la matrícula y elimina el coche correspondiente. */
     private static void borrarCoche() throws MiEntrdaSalidaException, BBDDException {
         String matricula = MiEntradaSalida.leerLinea("Matrícula del coche a borrar: ");
         bbdd.borrarCoche(matricula);
         MiEntradaSalida.imprimirMensaje("Coche eliminado correctamente.");
     }
 
-    // 10. Realizar Traspaso (transaccional + verifica comprador y coche)
+    /** Pide los datos de la venta y cambia el propietario del coche. */
     private static void realizarTraspaso() throws MiEntrdaSalidaException, BBDDException {
-        int idvendedor = MiEntradaSalida.leerEntero("Id del vendedor (si es el concesionario pon 0 y si pones uno que no existe se tomara que tambien es el concesionario): ");
+        listarPropietarios();
+        int idvendedor = MiEntradaSalida.leerEntero("Id del vendedor (0 si es el concesionario): ");
         int idPropietario = MiEntradaSalida.leerEntero("Id del nuevo propietario: ");
         String matricula = MiEntradaSalida.leerLinea("Matrícula del coche: ");
         double monto = MiEntradaSalida.leerDouble("Monto económico: ");
@@ -262,7 +268,16 @@ public class Main {
         MiEntradaSalida.imprimirMensaje("Traspaso realizado con éxito.");
     }
 
-    // 11. Ejecutar Procedimiento Almacenado (Solo MySQL)
+    /** Muestra la lista de propietarios registrados. */
+    private static void listarPropietarios() throws BBDDException {
+        List<Propietario> propietarios = bbdd.listarPropietarios();
+
+        for (Propietario p : propietarios){
+            System.out.println(p.toString());
+        }
+    }
+
+    /** Busca coches por marca usando la opción disponible para MySQL. */
     private static void ejecutarProcedimientoMySQL() throws MiEntrdaSalidaException, BBDDException {
         if (!(bbdd instanceof SQL)) {
             MiEntradaSalida.imprimirMensaje("Esta opción solo está disponible para MySQL.");
@@ -275,7 +290,7 @@ public class Main {
         }
     }
 
-    // 12. Generar Informe Resumen (informe_concesionario.txt)
+    /** Crea un informe con un resumen de los datos del concesionario. */
     private static void generarInformeResumen() throws BBDDException {
         bbdd.generarInformeResumen();
         MiEntradaSalida.imprimirMensaje("Informe generado correctamente");

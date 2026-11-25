@@ -1,0 +1,10 @@
+INFORME RESUMEN DEL CONCESIONARIO
+
+Número total de coches: 3
+
+Coches por marca:
+- Peugeot: 1
+- Seat: 1
+- Toyota: 1
+
+Extra o equipamiento más repetido: Llantas de aleación (1 veces), Techo solar (1 veces), Cámara trasera (1 veces), Climatizador (1 veces), Sensor de aparcamiento (1 veces)

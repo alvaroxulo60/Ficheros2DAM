@@ -11,6 +11,7 @@ public class PropertiesReader {
     private Properties p;
     private static PropertiesReader instance = null;
 
+    /** Carga las opciones guardadas en config.properties. */
     private PropertiesReader() throws AppException {
         p = new Properties();
         try (InputStream lector = PropertiesReader.class.getResourceAsStream(FILE_NAME)) {
@@ -23,6 +24,7 @@ public class PropertiesReader {
         }
     }
 
+    /** Devuelve el lector compartido de configuración. */
     public static PropertiesReader getInstance() throws AppException {
         if (instance == null){
             instance = new PropertiesReader();
@@ -31,6 +33,7 @@ public class PropertiesReader {
         return instance;
     }
 
+    /** Devuelve el valor de la opción indicada. */
     public String get(String propiedad){
         return p.getProperty(propiedad);
     }

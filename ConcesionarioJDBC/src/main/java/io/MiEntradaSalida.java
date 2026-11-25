@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class MiEntradaSalida {
     private static Scanner sc;
 
+    /** Devuelve el lector de teclado y lo crea si hace falta. */
     private static Scanner getScanner() {
         if (sc == null) {
             sc = new Scanner(System.in);
@@ -285,6 +286,7 @@ public class MiEntradaSalida {
         System.out.println();
     }
 
+    /** Pide una fecha y la devuelve si sus valores son válidos. */
     public static LocalDate fecha(String mensaje) throws MiEntrdaSalidaException {
         int año =  leerEnteroPositivo("Introduce el año: ",true);
         int mes =  leerEnteroPositivo("Introduce el mes: ",true);
@@ -297,12 +299,14 @@ public class MiEntradaSalida {
 
     }
 
+    /** Lee un único carácter o avisa si se ha escrito más de uno. */
     public static char leerChar(String mensaje) throws MiEntrdaSalidaException{
         String texto = leerTexto(mensaje);
         if (texto.length() != 1) {throw new MiEntrdaSalidaException("Debes introducir un caracter.");}
         return texto.charAt(0);
     }
 
+    /** Muestra un mensaje en la consola. */
     public static void imprimirMensaje(String s) {
         System.out.println(s);
     }

@@ -18,6 +18,7 @@ public class ConexionBBDD {
 
     private static ConexionBBDD instance;
 
+    /** Lee la configuración necesaria para conectarse a las bases de datos. */
     private ConexionBBDD() throws BBDDException {
         try {
             p = PropertiesReader.getInstance();
@@ -31,6 +32,7 @@ public class ConexionBBDD {
         }
     }
 
+    /** Devuelve la instancia compartida de la configuración de conexión. */
     public static ConexionBBDD getInstance() throws BBDDException {
         if (instance == null){
                 instance = new ConexionBBDD();
@@ -38,10 +40,12 @@ public class ConexionBBDD {
         return instance;
     }
 
+    /** Abre y devuelve una conexión a MySQL. */
     public static Connection getConexionSQL() throws SQLException {
         return DriverManager.getConnection(url,user,pass);
     }
 
+    /** Abre y devuelve una conexión a SQLite. */
     public static Connection getConexionLite() throws SQLException {
         return DriverManager.getConnection(urlLite);
     }
